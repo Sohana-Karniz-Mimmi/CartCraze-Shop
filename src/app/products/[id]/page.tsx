@@ -24,7 +24,6 @@ export async function generateMetadata({ params }: TMetaProps) {
 }
 
 async function getProduct(id: string): Promise<IProduct | undefined> {
-  throw new Error("Test Error");
   try {
     const response = await fetch(`https://fakestoreapi.com/products/${id}`, {
       cache: "no-store",
