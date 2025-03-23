@@ -8,6 +8,10 @@ export default async function Products() {
     next: { revalidate: 1800 },
   });
 
+  if (!res.ok) {
+    throw new Error(`Failed to fetch products: ${res.statusText}`);
+  }
+
   const products = await res.json();
 
   return (

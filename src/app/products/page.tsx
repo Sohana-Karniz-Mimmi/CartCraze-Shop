@@ -5,26 +5,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ProductsHeader from "@/components/Products/products-header";
 import ProductFilters from "@/components/Products/product-filters";
 import ProductGrid from "@/components/Products/product-grid";
-
-// Define the product interface
-export interface IProduct {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-  rating: {
-    rate: number;
-    count: number;
-  };
-}
+import { IProduct } from "@/types/products";
 
 // Fetch all products from the Fake Store API
 async function getProducts(): Promise<IProduct[]> {
   try {
     const response = await fetch("https://fakestoreapi.com/products", {
-      next: { revalidate: 3600 }, // Cache for 1 hour
+      next: { revalidate: 1800 },
     });
 
     if (!response.ok) {
@@ -38,13 +25,12 @@ async function getProducts(): Promise<IProduct[]> {
   }
 }
 
-// Fetch all categories from the Fake Store API
 async function getCategories(): Promise<string[]> {
   try {
     const response = await fetch(
       "https://fakestoreapi.com/products/categories",
       {
-        next: { revalidate: 3600 }, // Cache for 1 hour
+        next: { revalidate: 1800 },
       }
     );
 
