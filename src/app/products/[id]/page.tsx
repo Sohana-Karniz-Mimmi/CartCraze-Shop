@@ -1,41 +1,55 @@
-import Image from "next/image"
-import { notFound } from "next/navigation"
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { Separator } from "@/components/ui/separator";
+import ProductRating from "@/components/ProductDetails/product-rating";
+import AddToCartButton from "@/components/ProductDetails/add-to-cart-button";
+import RelatedProducts from "@/components/ProductDetails/related-products";
+import { IProduct } from "@/types/products";
 
-import { Button } from "@/components/ui/Button"
-import { Separator } from "@/components/ui/separator"
-import ProductRating from "@/components/ProductDetails/product-rating"
-import AddToCartButton from "@/components/ProductDetails/add-to-cart-button"
-import RelatedProducts from "@/components/ProductDetails/related-products"
-import { IProduct } from "@/types/products"
+type TMetaProps = {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
 
+export async function generateMetadata({ params }: TMetaProps) {
+  const id = params.id;
+  const product = await fetch(`https://fakestoreapi.com/products/${id}`);
+  const data = await product.json();
+  const productDetails = data as IProduct;
+  return {
+    title: productDetails.title,
+    description: productDetails.description,
+  };
+}
 
 async function getProduct(id: string): Promise<IProduct | undefined> {
+  throw new Error("Test Error");
   try {
     const response = await fetch(`https://fakestoreapi.com/products/${id}`, {
-      next: { revalidate: 3600 }, // Cache for 1 hour
-    })
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       if (response.status === 404) {
-        return undefined
+        return undefined;
       }
-      throw new Error(`Failed to fetch product: ${response.statusText}`)
+      throw new Error(`Failed to fetch product: ${response.statusText}`);
     }
 
-    return await response.json()
+    return await response.json();
   } catch (error) {
-    console.error("Error fetching product:", error)
-    return undefined
+    console.error("Error fetching product:", error);
+    return undefined;
   }
 }
 
-
-  const page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const id = (await params).id;
-  const product = await getProduct(id)
+const page = async ({ params }: { params: { id: string } }) => {
+  const id = params.id;
+  const product = await getProduct(id);
 
   if (!product) {
-    notFound()
+    return notFound();
   }
 
   return (
@@ -56,12 +70,18 @@ async function getProduct(id: string): Promise<IProduct | undefined> {
 
         <div className="flex flex-col space-y-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{product.title}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {product.title}
+            </h1>
             <div className="mt-2 flex items-center gap-4">
               <ProductRating rating={product.rating.rate} />
-              <span className="text-sm text-muted-foreground">({product.rating.count} reviews)</span>
+              <span className="text-sm text-muted-foreground">
+                ({product.rating.count} reviews)
+              </span>
             </div>
-            <p className="text-2xl font-semibold mt-4 text-primary">${product.price.toFixed(2)}</p>
+            <p className="text-2xl font-semibold mt-4 text-primary">
+              ${Number(product.price).toFixed(2)}
+            </p>
           </div>
 
           <div className="prose prose-sm">
@@ -70,7 +90,9 @@ async function getProduct(id: string): Promise<IProduct | undefined> {
 
           <div className="flex items-center">
             <span className="text-sm font-medium">Category: </span>
-            <span className="text-sm text-muted-foreground ml-2 capitalize">{product.category}</span>
+            <span className="text-sm text-muted-foreground ml-2 capitalize">
+              {product.category}
+            </span>
           </div>
 
           <div className="flex flex-col space-y-3">
@@ -86,8 +108,8 @@ async function getProduct(id: string): Promise<IProduct | undefined> {
             <h3 className="text-lg font-semibold">Product Details</h3>
             <p>{product.description}</p>
             <p>
-              This {product.category} item has received {product.rating.rate} stars from {product.rating.count}{" "}
-              customers.
+              This {product.category} item has received {product.rating.rate}{" "}
+              stars from {product.rating.count} customers.
             </p>
           </div>
         </div>
@@ -97,10 +119,13 @@ async function getProduct(id: string): Promise<IProduct | undefined> {
 
       <section>
         <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-        <RelatedProducts currentProductId={product.id} category={product.category} />
+        <RelatedProducts
+          currentProductId={product.id}
+          category={product.category}
+        />
       </section>
     </div>
-  )
-}
+  );
+};
 
 export default page;
