@@ -3,7 +3,9 @@ import NewsletterSubscriptionSimple from "@/components/Home/NewsletterSubscripti
 import Products from "@/components/Home/Products";
 // import SpecialOffers from "@/components/Home/SpecialOffers";
 import Testimonials from "@/components/Home/Testimonials";
-
+import { getPageMetaData } from "@/utils/meta";
+import { Metadata } from "next";
+export const metadata: Metadata = getPageMetaData("CartCraze");
 export default function Home() {
   return (
     <div>
@@ -12,7 +14,6 @@ export default function Home() {
       {/* <SpecialOffers /> */}
       <Testimonials />
       <NewsletterSubscriptionSimple />
-      
     </div>
   );
 }
