@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Shared/Navbar";
 import Footer from "@/components/Shared/Footer";
-
+import { Toaster } from "sonner";
 export const metadata: Metadata = {
   title: {
     default: "CartCraze",
@@ -40,6 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+      <Toaster position="top-center" richColors={true} />
         <Navbar />
         {children}
         <Footer />

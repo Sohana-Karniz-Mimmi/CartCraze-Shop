@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { IProduct } from "@/types/products";
+import { toast } from "sonner";
 
 const ProductCard = ({ products }: { products: IProduct[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -62,6 +63,26 @@ const ProductCard = ({ products }: { products: IProduct[] }) => {
           />
         );
       });
+  };
+
+  const handleAddToCart = async (userId: number) => {
+    try {
+      const response = await fetch("https://fakestoreapi.com/carts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userId,
+          date: new Date().toISOString().split("T")[0],
+          products: [{ userId, quantity: 1 }],
+        }),
+      });
+
+      const data = await response.json();
+      toast.success("Added successfully");
+      console.log("Cart Response:", data);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
 
   return (
@@ -186,7 +207,10 @@ const ProductCard = ({ products }: { products: IProduct[] }) => {
                 </Link>
 
                 <CardFooter className="p-4 pt-0">
-                  <Button className="w-full">
+                  <Button
+                    onClick={() => handleAddToCart(product?.id)}
+                    className="w-full"
+                  >
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     Add to Cart
                   </Button>
